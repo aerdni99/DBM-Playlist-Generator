@@ -1,0 +1,87 @@
+-- Table: public.Songs
+
+-- DROP TABLE IF EXISTS public."Songs";
+
+CREATE TABLE IF NOT EXISTS public."Songs"
+(
+    id character(22)[] COLLATE pg_catalog."default" NOT NULL,
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    album character varying COLLATE pg_catalog."default" NOT NULL,
+    album_id character varying COLLATE pg_catalog."default" NOT NULL,
+    artists character varying COLLATE pg_catalog."default" NOT NULL,
+    artist_ids character varying COLLATE pg_catalog."default" NOT NULL,
+    track_number integer NOT NULL,
+    disc_number integer NOT NULL,
+    explicit boolean NOT NULL,
+    danceability real NOT NULL,
+    energy real NOT NULL,
+    key integer NOT NULL,
+    loudness double precision NOT NULL,
+    mode boolean NOT NULL,
+    speechiness real NOT NULL,
+    acousticness real NOT NULL,
+    instrumentalness double precision NOT NULL,
+    liveness real NOT NULL,
+    valence real NOT NULL,
+    tempo double precision NOT NULL,
+    duration_ms integer NOT NULL,
+    time_signature integer NOT NULL,
+    year integer NOT NULL,
+    release_date date NOT NULL,
+    CONSTRAINT "Songs_pkey" PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Songs"
+    OWNER to aiertbbbpvwith;
+
+-- Table: public.Playlists
+
+-- DROP TABLE IF EXISTS public."Playlists";
+
+CREATE TABLE IF NOT EXISTS public."Playlists"
+(
+    id character(10)[] COLLATE pg_catalog."default" NOT NULL,
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    link character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT "Playlists_pkey" PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Playlists"
+    OWNER to aiertbbbpvwith;
+
+-- Table: public.Created_By
+
+-- DROP TABLE IF EXISTS public."Created_By";
+
+CREATE TABLE IF NOT EXISTS public."Created_By"
+(
+    artist_name character varying COLLATE pg_catalog."default" NOT NULL,
+    song_id character(22)[] COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT "Created_By_pkey" PRIMARY KEY (artist_name, song_id),
+    CONSTRAINT "Created_By_song_id_fkey" FOREIGN KEY (song_id)
+        REFERENCES public."Songs" (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Created_By"
+    OWNER to aiertbbbpvwith;
+
+
+CREATE TABLE public."Playlist_Songs"
+(
+	playlist_id character(10)[] NOT NULL,
+	song_id character(22)[] NOT NULL,
+	index integer NOT NULL,
+	FOREIGN KEY (playlist_id) REFERENCES public."Playlists" (id),
+	FOREIGN KEY (song_id) REFERENCES public."Songs" (id),
+	PRIMARY KEY (playlist_id, song_id)
+)
+
+
