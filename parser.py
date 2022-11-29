@@ -1,17 +1,7 @@
-
-
 """
-This parsing loop is junk, but it gets the job done
-It grabs all the data from the table and formats it
-instead of just grabbing necessary data and taking each
-column case by case.
+    parser.py
 
-If I were to do it again, I'd definitely have similar strategies
-to how the artParse.py file implements parsing the .csv.
-
-But that being said, this parsing loop looks at every row, every column,
-formats the database, and sends it to our postgres database with the 
-python module psycopg2.
+    Parsing loop for transferring data from teacks_features.csv to our songs table
 """
 
 
@@ -20,61 +10,49 @@ import sys
 import csv
 
 try:
-    
-    con = psycopg2.connect("host=ec2-54-163-34-107.compute-1.amazonaws.com dbname=dokaffa4bdtr5 user=aiertbbbpvwith password=97b7d375e7f3a5e77c209f7c3849ce32ca245331c096709e77aab93119ad3b21")
+    # EDIT CONNECTION INFO FOR SETTING UP ON A DIFFERENT SERVER
+    con = psycopg2.connect(
+        database="postgres",
+        user="postgres",
+        password="password")
 
     cur = con.cursor()
-    count = 0
+    numRows = 1000
+    count = -1
 
-    with open("tracks_features.csv") as csv_file:
+    # These lists represent indices of data types in our .csv file
+    importantCols = [12, 21, 23, 10, 11, 13, 15, 16, 17, 18, 19, 20, 9]
+    strings = [1, 2]
+
+    with open("tracks_features.csv", encoding="utf8") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
             count += 1
-            if (count > 1001):
+            values = ""
+            if count == 0:
+                continue
+            if count > numRows:
                 break
-            values = '\''
             attribCount = 0
             for x in row:
-                x = x.replace('\'', '\'\'')
                 attribCount += 1
-                if (attribCount == 22):
-                    x = x[0:1]
-                if (attribCount == 24):
-                    break
-                if (attribCount < 6):
-                    values += x + '\', \''
-                elif (attribCount == 6):
-                    values += x + '\', '
-                elif (attribCount < 23):
-                    if (attribCount == 14):
-                        if (x == 1):
-                            x = 'True'
-                        else:
-                            x = 'False'
-                        values += x + ', '
+                if attribCount in importantCols:
+                    values += ", " + x
+                elif attribCount in strings:
+                    x = x.replace("\'", "\'\'")
+                    if attribCount == 2:
+                        values += ", "
+                    values += "\'" + x + "\'"
+                elif (attribCount == 14):
+                    if (x == "1"):
+                        x = 'TRUE'
                     else:
-                        values += x + ', '
-                else:
-                    values += x
-            if (row[0] != 'id'):
-                id = 'INSERT INTO public."Songs" VALUES (' + values + ');'
-                cur.execute(id)
-
-        
-    cur.execute('SELECT * FROM public."Songs"')
-
-    for x in range(999):
-        print(cur.fetchone())
-        print()
+                        x = 'FALSE'
+                    values += ", " + x
+            id = 'INSERT INTO public."Songs" VALUES (' + values + ');'
+            cur.execute(id)
 
     con.commit()
-    """
-    sql = 'INSERT INTO public."Songs" ("id") VALUES (\'3zm2xw2tuKzCio7wgrd1zO\')'
-    cur.execute(sql)
-    cur.execute('SELECT * FROM public."Songs"')
-    cur.fetchall()
-    """
-
 
 except psycopg2.DatabaseError as e:
 
