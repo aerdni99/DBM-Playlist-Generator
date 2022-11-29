@@ -1,3 +1,5 @@
+# This connection info is outdated
+
 host = 'ec2-54-163-34-107.compute-1.amazonaws.com'
 port = 5432
 database = 'dokaffa4bdtr5'
