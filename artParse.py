@@ -18,7 +18,7 @@ try:
     con = psycopg2.connect(
         database=os.getenv('db'),
         user=os.getenv('user'),
-        password=os.getenv('pass'),
+        password=os.getenv('password'),
         port=os.getenv('port'))
 
     cur = con.cursor()
