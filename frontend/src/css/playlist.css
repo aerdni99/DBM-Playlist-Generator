@@ -1,13 +1,4 @@
-#root {
+.playlists {
     background-image: linear-gradient(lightblue, rgb(255, 255, 255));
     border: 2px solid black;
-}
-
-body,
-html {
-    min-height: 100%;
-    height: auto;
-}
-.range {
-    width: 10%;
 }

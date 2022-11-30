@@ -77,7 +77,7 @@ export default function Root() {
                 Playlist Name
                 <br />
                 <input defaultValue={1000} {...register('num_songs')} />
-                Number of Songs (MAX: 1000)
+                Number of Songs
                 <br />
                 <input {...register('artists')} />
                 Artists (Separate artists by comma)
