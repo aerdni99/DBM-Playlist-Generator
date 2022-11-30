@@ -44,7 +44,7 @@ try:
                         query = 'INSERT INTO public."Created_By" VALUES (' + artistName + ', ' + songID + ');'
                         cur.execute(query)
 
-    # con.commit()
+    con.commit()
 
 except psycopg2.DatabaseError as e:
 
