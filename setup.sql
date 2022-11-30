@@ -1,4 +1,8 @@
+/*
+    setup.sql
 
+    SQL statements for setting up our tables for the playlist generator
+*/
 CREATE TABLE public."Songs"
 (
     id character varying NOT NULL,
