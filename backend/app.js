@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
+const { param } = require('express/lib/request');
 require('dotenv').config();
 
 const pool = new Pool({
@@ -47,6 +48,7 @@ app.post('/playlists', express.json(), (req, res) => {
     num_songs = 1000, // max of 1000
     artists, // array of artists
     explicit,
+    playlist_name,
     // below values are arrays formatted as [min,max]
     dance,
     energy,
@@ -103,7 +105,32 @@ app.post('/playlists', express.json(), (req, res) => {
   console.log(playlist_query);
 
   pool.query(playlist_query, (err, results) => {
-    res.status(200).json(results.rows);
+    // res.status(200).json(results.rows);
+    const songs = results.rows;
+    if (songs.length === 0) {
+      return res.status(400).send("No songs found");
+    }
+
+    pool.query('INSERT INTO public."Playlists" (name, link) VALUES ($1, $2) RETURNING id', [playlist_name, 'TBD'])
+      .then(insertRes => {
+        const parameters = [];
+        const playlist_id = insertRes.rows[0].id;
+
+        let count = 1;
+        let insert_query = songs.reduce((prev, song) => {
+          prev += `($${count}, $${count + 1}, $${count + 2}),`;
+          parameters.push(playlist_id, song.id, (count - 1) / 3);
+          count += 3;
+          return prev;
+        }, 'INSERT INTO "Playlist_Songs" (playlist_id, song_id, index) VALUES ');
+        // remove trailing comma
+        insert_query = insert_query.slice(0, -1);
+
+        pool.query(insert_query, parameters)
+          .then(
+            () => res.status(200).send('inserted')
+          );
+      });
   });
 });
 // app.put('/playlists')
