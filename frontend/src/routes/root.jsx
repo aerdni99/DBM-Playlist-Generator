@@ -32,7 +32,13 @@ export default function Root() {
     const onSubmit = data => {
         const { artists } = data;
         if (artists === "") data.artists = undefined;
-        else data.artists = data.artists.split(',');
+        else {
+
+            data.artists = data.artists.split(',').reduce((prev, curr) => {
+                prev.push(curr.trim());
+                return prev;
+            }, []);
+        }
 
         fetch('/playlists', {
             method: 'POST',
