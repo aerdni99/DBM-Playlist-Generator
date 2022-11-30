@@ -24,24 +24,34 @@ app.use(cors());
 // });
 
 app.get('/playlists', (req, res) => {
-  return res.status(200).json([
-    { name: 'test' }, { name: 'balh' }, { name: 'asdf' }
-  ]);
-  pool.query('SELECT * FROM public."Playlists"', (err, results) => {
-    if (err) {
-      throw err;
-    }
-
-    res.status(200).json(results.rows);
-  });
+  pool.query('SELECT * FROM public."Playlists"').then(
+    (results) => {
+      const playlists = results.rows;
+      res.status(200).json(playlists);
+    });
 });
-app.delete('/playlists', express.json(), (req, res) => {
-  const { playlist_id } = req.body;
 
-  pool.query('DELETE FROM Playlists WHERE playlist_id=' + playlist_id);
+app.get('/playlists/:playlist_id', (req, res) => {
+  const { playlist_id } = req.params;
 
-  res.end();
+  pool.query(`SELECT name, index FROM public."Songs" s INNER JOIN (SELECT * FROM public."Playlist_Songs" WHERE playlist_id = $1) ps ON s.id = ps.song_id ORDER BY index`, [playlist_id])
+    .then(
+      (results) => {
+        const songs = results.rows;
+        res.status(200).json(songs);
+      }
+    );
 });
+
+app.delete('/playlists/:playlist_id', express.json(), (req, res) => {
+  const { playlist_id } = req.params;
+
+  pool.query('DELETE FROM public."Playlists" WHERE playlist_id = $1', [playlist_id])
+    .then(
+      () => res.end()
+    );
+});
+
 app.post('/playlists', express.json(), (req, res) => {
   console.log(req.body);
   const {
@@ -122,7 +132,7 @@ app.post('/playlists', express.json(), (req, res) => {
           parameters.push(playlist_id, song.id, (count - 1) / 3);
           count += 3;
           return prev;
-        }, 'INSERT INTO "Playlist_Songs" (playlist_id, song_id, index) VALUES ');
+        }, 'INSERT INTO public."Playlist_Songs" (playlist_id, song_id, index) VALUES ');
         // remove trailing comma
         insert_query = insert_query.slice(0, -1);
 
