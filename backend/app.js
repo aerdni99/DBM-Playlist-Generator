@@ -44,27 +44,30 @@ app.post('/playlists', express.json(), (req, res) => {
     tempo,
     valence,
   } = req.body;
+  
+  // select songs from Songs table
+  let song_query = 'SELECT song_id, name FROM (public."Songs"';
 
-  // left part of natural join
+  // select songs based on artists (Created_By table)
   let artist_query;
   if (artists) {
     artist_query = artists.reduce((res, artist, i) => {
       res += 'artist_name = ' + artist;
       if (i != artists.length - 1) res += ' OR ';
     }, `SELECT * FROM Created_By WHERE `);
+    song_query += ' NATURAL JOIN ' + artist_query;
   }
+  ') TABLESAMPLE SYSTEM_ROWS(' + num_songs + ')';
 
-  // right part of natural join
-  let song_query_beginning = 'SELECT song_id, name FROM public."Songs" TABLESAMPLE SYSTEM_ROWS(' + num_songs + ')';
-  let song_query = song_query_beginning + ' WHERE ';
+  let playlist_query = song_query + ' WHERE ';
 
   if (explicit) {
-    song_query += 'explicit = ' + explicit + ' OR ';
+    playlist_query += 'explicit = ' + explicit + ' OR ';
   }
 
-  // deal with ranges
+  // function to deal with ranges
   const add_range = (val, val_name) => {
-    song_query += '(' + val_name + ' >= ' + val[0] + ' AND ' + val_name + ' <= ' + val[1] + ')' + ' OR ';
+    playlist_query += '(' + val_name + ' >= ' + val[0] + ' AND ' + val_name + ' <= ' + val[1] + ')' + ' OR ';
   };
 
   // iterate through ranges and ignore if null
@@ -78,17 +81,13 @@ app.post('/playlists', express.json(), (req, res) => {
   });
 
   // remove trailing OR
-  if (song_query.slice(-3) === 'OR ') {
-    song_query = song_query.substring(0, song_query.length - 4);
+  if (playlist_query.slice(-3) === 'OR ') {
+    playlist_query = playlist_query.substring(0, playlist_query.length - 4);
   }
   // if no trailing OR, that means no values were added and there's a trailing WHERE
   else {
-    song_query = song_query_beginning;
+    playlist_query = song_query;
   }
-
-  let playlist_query;
-  if (!artist_query) playlist_query = song_query;
-  else playlist_query = artist_query + ' NATURAL JOIN ' + song_query;
 
   // res.send(playlist_query);
 
