@@ -1,0 +1,13 @@
+.root {
+    background-image: linear-gradient(lightblue, rgb(255, 255, 255));
+    height: 100%;
+    border: 2px solid black;
+}
+
+.range {
+    width:5%;
+}
+
+.rangeLabel {
+    text-align: right
+}
