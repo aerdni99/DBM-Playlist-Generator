@@ -35,8 +35,8 @@ CREATE TABLE public."Created_By"
     CONSTRAINT "Created_By_pkey" PRIMARY KEY (artist_name, song_id),
     CONSTRAINT "Created_By_song_id_fkey" FOREIGN KEY (song_id)
         REFERENCES public."Songs" (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 )
 
 CREATE TABLE public."Playlist_Songs"
@@ -44,7 +44,7 @@ CREATE TABLE public."Playlist_Songs"
 	playlist_id SERIAL NOT NULL,
 	song_id character varying NOT NULL,
 	index integer NOT NULL,
-	FOREIGN KEY (playlist_id) REFERENCES public."Playlists" (id),
+	FOREIGN KEY (playlist_id) REFERENCES public."Playlists" (id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (song_id) REFERENCES public."Songs" (id),
 	PRIMARY KEY (playlist_id, song_id)
 )
