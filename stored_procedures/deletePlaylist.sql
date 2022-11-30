@@ -1,3 +1,9 @@
+-- 3 statements here:
+
+--  The first creates a stored procedure for deleting a playlist by id
+--  The second calls the procedure
+--  The third ...
+
 CREATE PROCEDURE deletePlaylist (
 plid VARCHAR
 )
