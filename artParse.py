@@ -8,6 +8,7 @@ import psycopg2
 import sys
 import csv
 import os
+import ast
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -22,7 +23,7 @@ try:
         port=os.getenv('port'))
 
     cur = con.cursor()
-    numRows = 1000
+    numRows = 10000000
     count = -1
 
     with open("tracks_features.csv", encoding="utf8") as csv_file:
@@ -34,20 +35,12 @@ try:
             values = ""
             if count == 0:
                 continue
-            attribCount = 0
-            for x in row:
-                attribCount += 1
-                if (attribCount == 1):
-                    # Handle song ID
-                    songID = "\'" + x + "\'"
-                if (attribCount == 5):
-                    index = 0
-                    for y in range(x.count('\', \'') + 1):
-                        # Handle artist names
-                        artistName = "\'" + x[(x.find('\'') + 1):(-1 * (len(x) - x.find('\'', x.find('\'') + 1)))] + "\'"
-                        x = x[(x.find('\'', x.find('\'') + 1)) + 3:]
-                        query = 'INSERT INTO public."Created_By" VALUES (' + artistName + ', ' + songID + ');'
-                        cur.execute(query)
+            songID = row[0]
+            artists = ast.literal_eval(row[4])
+            
+            for artist in artists:
+                query = 'INSERT INTO public."Created_By" VALUES (%s, %s);'
+                cur.execute(query, (artist, songID))
 
     con.commit()
 

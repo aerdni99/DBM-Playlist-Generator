@@ -22,7 +22,7 @@ try:
         port=os.getenv('port'))
 
     cur = con.cursor()
-    numRows = 1000
+    numRows = 10000000
     count = -1
 
     # These lists represent indices of data types in our .csv file
