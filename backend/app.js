@@ -1,24 +1,29 @@
 const express = require('express');
+const cors = require('cors');
 const { Pool } = require('pg');
 require('dotenv').config();
 
 const pool = new Pool({
-  connectionString: process.env.db_uri,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  database: process.env.db,
+  host: 'localhost',
+  user: process.env.user,
+  password: process.env.password,
+  port: process.env.port,
+  ssl: false
 });
 
 const app = express();
+const port = 4000;
 
-const port = 3000;
+app.use(cors());
 
-app.get('/', (req, res) => {
-  res.send('Playlist-maker homepage');
-});
+
+// app.get('/', (req, res) => {
+//   res.send('Playlist-maker homepage');
+// });
 
 app.get('/playlists', (req, res) => {
-  pool.query('SELECT * FROM public."Playlist"', (err, results) => {
+  pool.query('SELECT * FROM public."Playlists"', (err, results) => {
     if (err) {
       throw err;
     }
@@ -29,7 +34,7 @@ app.get('/playlists', (req, res) => {
 app.delete('/playlists', express.json(), (req, res) => {
   const { playlist_id } = req.body;
 
-  pool.query('DELETE FROM Playlist WHERE playlist_id=' + playlist_id);
+  pool.query('DELETE FROM Playlists WHERE playlist_id=' + playlist_id);
 
   res.end();
 });
@@ -100,5 +105,5 @@ app.post('/playlists', express.json(), (req, res) => {
 // app.put('/playlists')
 
 app.listen(port, () => {
-  console.log('listening on port 3000');
+  console.log('listening on port ' + port);
 });
