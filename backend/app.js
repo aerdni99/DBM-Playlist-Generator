@@ -46,7 +46,7 @@ app.get('/playlists/:playlist_id', (req, res) => {
 app.delete('/playlists/:playlist_id', express.json(), (req, res) => {
   const { playlist_id } = req.params;
 
-  pool.query('DELETE FROM public."Playlists" WHERE playlist_id = $1', [playlist_id])
+  pool.query('DELETE FROM public."Playlists" WHERE id = $1', [playlist_id])
     .then(
       () => res.end()
     );
@@ -81,8 +81,8 @@ app.post('/playlists', express.json(), (req, res) => {
 
   let playlist_query = song_query + ' WHERE ';
 
-  if (explicit) {
-    playlist_query += 'explicit = ' + explicit + ' OR ';
+  if (!explicit) {
+    playlist_query += `explicit = ${explicit} OR `;
   }
 
   // function to deal with ranges
@@ -115,7 +115,6 @@ app.post('/playlists', express.json(), (req, res) => {
   console.log(playlist_query);
 
   pool.query(playlist_query, (err, results) => {
-    // res.status(200).json(results.rows);
     const songs = results.rows;
     if (songs.length === 0) {
       return res.status(400).send("No songs found");
@@ -143,7 +142,6 @@ app.post('/playlists', express.json(), (req, res) => {
       });
   });
 });
-// app.put('/playlists')
 
 app.listen(port, () => {
   console.log('listening on port ' + port);
