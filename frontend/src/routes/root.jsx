@@ -14,14 +14,10 @@ function RangeComponent({ name, control, min, max, step }) {
                 <Slider
                     className="range"
                     range
-                    // value={value}
                     min={min}
                     max={max}
                     defaultValue={[min, max]}
                     step={step}
-                    // onChange={(value) => {
-                    //     onChange(value);
-                    // }} 
                     {...field}
                 />
             )}

@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 const { param } = require('express/lib/request');
-require('dotenv').config();
+require('dotenv').config(({ path: '../.env' }));
 
 const pool = new Pool({
   database: process.env.db,

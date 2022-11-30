@@ -7,14 +7,19 @@
 import psycopg2
 import sys
 import csv
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 try:
     
     # EDIT CONNECTION INFO FOR SETTING UP ON A DIFFERENT SERVER
     con = psycopg2.connect(
-        database="postgres",
-        user="postgres",
-        password="password")
+        database=os.getenv('db'),
+        user=os.getenv('user'),
+        password=os.getenv('pass'),
+        port=os.getenv('port'))
 
     cur = con.cursor()
     numRows = 1000
@@ -44,7 +49,7 @@ try:
                         query = 'INSERT INTO public."Created_By" VALUES (' + artistName + ', ' + songID + ');'
                         cur.execute(query)
 
-    # con.commit()
+    con.commit()
 
 except psycopg2.DatabaseError as e:
 
