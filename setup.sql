@@ -3,12 +3,6 @@ CREATE TABLE public."Songs"
 (
     id character varying NOT NULL,
     name character varying NOT NULL,
-    album character varying NOT NULL,
-    album_id character varying NOT NULL,
-    artists character varying NOT NULL,
-    artist_ids character varying NOT NULL,
-    track_number integer NOT NULL,
-    disc_number integer NOT NULL,
     explicit boolean NOT NULL,
     danceability real NOT NULL,
     energy real NOT NULL,
@@ -22,9 +16,7 @@ CREATE TABLE public."Songs"
     valence real NOT NULL,
     tempo double precision NOT NULL,
     duration_ms integer NOT NULL,
-    time_signature integer NOT NULL,
     year integer NOT NULL,
-    release_date date NOT NULL,
     CONSTRAINT "Songs_pkey" PRIMARY KEY (id)
 )
 
