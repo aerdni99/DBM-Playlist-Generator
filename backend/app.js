@@ -67,7 +67,7 @@ app.post('/playlists', express.json(), (req, res) => {
   } = req.body;
 
   // select songs from Songs table
-  let song_query = 'SELECT id, name FROM public."Songs"';
+  let song_query = 'SELECT * FROM (SELECT DISTINCT id, name FROM public."Songs"';
 
   // select songs based on artists (Created_By table)
   if (artists) {
@@ -109,8 +109,10 @@ app.post('/playlists', express.json(), (req, res) => {
     playlist_query = song_query;
   }
 
+  playlist_query += `) d ORDER BY RANDOM() LIMIT ${num_songs}`;
+
   // res.send(playlist_query);
-  playlist_query += ' ORDER BY RANDOM() LIMIT ' + num_songs;
+  // playlist_query += ' LIMIT ' + num_songs;
 
   console.log(playlist_query);
 
