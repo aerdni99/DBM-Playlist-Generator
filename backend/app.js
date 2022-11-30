@@ -23,6 +23,9 @@ app.use(cors());
 // });
 
 app.get('/playlists', (req, res) => {
+  return res.status(200).json([
+    { name: 'test' }, { name: 'balh' }, { name: 'asdf' }
+  ]);
   pool.query('SELECT * FROM public."Playlists"', (err, results) => {
     if (err) {
       throw err;
@@ -39,8 +42,9 @@ app.delete('/playlists', express.json(), (req, res) => {
   res.end();
 });
 app.post('/playlists', express.json(), (req, res) => {
+  console.log(req.body);
   const {
-    num_songs, // max of 1000
+    num_songs = 1000, // max of 1000
     artists, // array of artists
     explicit,
     // below values are arrays formatted as [min,max]
@@ -49,20 +53,19 @@ app.post('/playlists', express.json(), (req, res) => {
     tempo,
     valence,
   } = req.body;
-  
+
   // select songs from Songs table
-  let song_query = 'SELECT song_id, name FROM (public."Songs"';
+  let song_query = 'SELECT id, name FROM public."Songs"';
 
   // select songs based on artists (Created_By table)
-  let artist_query;
   if (artists) {
-    artist_query = artists.reduce((res, artist, i) => {
-      res += 'artist_name = ' + artist;
+    let artist_query = artists.reduce((res, artist, i) => {
+      res += `artist_name = '` + artist + `'`;
       if (i != artists.length - 1) res += ' OR ';
-    }, `SELECT * FROM Created_By WHERE `);
-    song_query += ' NATURAL JOIN ' + artist_query;
+      return res;
+    }, `(SELECT * FROM public."Created_By" WHERE `);
+    song_query += ' s INNER JOIN ' + artist_query + `) c ON c.song_id = s.id`;
   }
-  ') TABLESAMPLE SYSTEM_ROWS(' + num_songs + ')';
 
   let playlist_query = song_query + ' WHERE ';
 
@@ -95,6 +98,7 @@ app.post('/playlists', express.json(), (req, res) => {
   }
 
   // res.send(playlist_query);
+  playlist_query += ' ORDER BY RANDOM() LIMIT ' + num_songs;
 
   console.log(playlist_query);
 
