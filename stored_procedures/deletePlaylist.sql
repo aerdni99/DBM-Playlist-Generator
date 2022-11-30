@@ -1,8 +1,10 @@
--- 3 statements here:
+/*
+    deletePlaylist.sql
 
---  The first creates a stored procedure for deleting a playlist by id
---  The second calls the procedure
---  The third ...
+    The first creates a stored procedure for deleting a playlist by id
+    The second calls the procedure
+    The third ...
+ */
 
 CREATE PROCEDURE deletePlaylist (
 plid VARCHAR
