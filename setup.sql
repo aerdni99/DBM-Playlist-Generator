@@ -22,7 +22,7 @@ CREATE TABLE public."Songs"
 
 CREATE TABLE public."Playlists"
 (
-    id character varying  NOT NULL,
+    id SERIAL NOT NULL,
     name character varying  NOT NULL,
     link character varying  NOT NULL,
     CONSTRAINT "Playlists_pkey" PRIMARY KEY (id)
@@ -41,7 +41,7 @@ CREATE TABLE public."Created_By"
 
 CREATE TABLE public."Playlist_Songs"
 (
-	playlist_id character varying NOT NULL,
+	playlist_id SERIAL NOT NULL,
 	song_id character varying NOT NULL,
 	index integer NOT NULL,
 	FOREIGN KEY (playlist_id) REFERENCES public."Playlists" (id),
